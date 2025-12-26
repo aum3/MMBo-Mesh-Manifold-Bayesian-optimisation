@@ -47,7 +47,7 @@ for simplex in simplices: # 5 elements in here
                                     [np.dot(e2, e1), np.dot(e2, e2)]])
             
             Det_gram =  np.linalg.det(Gram_matrix)
-            Area = (1/2) *  np.sqrt(np.abs(Det_gram) + 1e-10)  #1/3!. Have no idea ifthis should be here or even whether this bastard Gram thing works. 
+            Area = (1/2) *  np.sqrt(np.abs(Det_gram) + 1e-10)  #1/3!. Have no idea ifthis should be here or even whether the Gram matrix approach works. 
 
 
             #this is the dihedral angle between the two tetrahedra that 

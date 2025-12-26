@@ -478,7 +478,7 @@ def find_nearest_poisson(original_point):
             best_one = node_ind
     return best_one
 
-#make the bastard mesh kernel
+#create mesh kernel matrix
 
 INDS_VECTOR = np.zeros((original_mesh_points.shape[0], 1))
 
@@ -487,7 +487,7 @@ for i in range(original_mesh_points.shape[0]):
     point_1 = original_mesh_points[i, :]
     
     INDS_VECTOR[i] = find_nearest_poisson(point_1)
-BASTARD_KERNEL_MATRIX = kernel.K(params, INDS_VECTOR , INDS_VECTOR)
+mesh_kernel_matrix = kernel.K(params, INDS_VECTOR , INDS_VECTOR)
 
 
 
@@ -533,19 +533,19 @@ for i in range(original_mesh_points.shape[0]):
 
 
 # %% [markdown]
-# Making the actual plot mi bumbaclat. 
+# Creating kernel comparison plot. 
 # 
 
 # %%
 c = np.zeros((original_mesh_points.shape[0] ** 2, 1)) #Real distances matrix (Geodesics)
 b = np.zeros_like(c) #proper cts kernel 
-a = np.zeros_like(c) #bastard mesh one
+a = np.zeros_like(c) #mesh kernel approximation
 
 for i in range(0, original_mesh_points.shape[0]):
     for j in range(0, original_mesh_points.shape[0]):
         c[(original_mesh_points.shape[0])*i + j] = Dist_matrix[i][j]
         b[(original_mesh_points.shape[0])*i + j] = CTS_kernel_matrix[i][j]
-        a[(original_mesh_points.shape[0])*i + j] = BASTARD_KERNEL_MATRIX[i][j]
+        a[(original_mesh_points.shape[0])*i + j] = mesh_kernel_matrix[i][j]
 
 
 
