@@ -533,7 +533,7 @@ for i in range(original_mesh_points.shape[0]):
 
 
 # %% [markdown]
-# Making the actual plot for plotting. 
+# Creating kernel comparison plot. 
 # 
 
 # %%

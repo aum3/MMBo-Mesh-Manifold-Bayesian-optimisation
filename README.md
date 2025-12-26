@@ -20,7 +20,7 @@ Demonstrates Bayesian optimisation on a 3D sphere mesh. The mesh is created via 
 Extends the approach to a 4-dimensional hypersphere using Delaunay triangulation to create the simplicial decomposition.
 
 ### 6D Demo
-Demonstrates BO on a 6-dimensional 3-torus ($\mathbb{T}^3$) embedded in $\mathbb{R}^6$. Uses a custom mesh Laplacian based on the n-dimensional cotangent formula.
+Demonstrates BO on a 3-torus ($\mathbb{T}^3 = S^1 \times S^1 \times S^1$) embedded in 6-dimensional space $\mathbb{R}^6$. The 3-torus is naturally embedded in $\mathbb{R}^6$ via the product of three circles. Uses a custom mesh Laplacian based on the n-dimensional cotangent formula.
 
 ## Altered Packages
 
