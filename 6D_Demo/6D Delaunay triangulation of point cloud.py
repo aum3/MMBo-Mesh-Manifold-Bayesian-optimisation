@@ -4,7 +4,7 @@ import scipy
 from plotly import graph_objects as go 
 
 
-verts = np.load("Sphere example for Hybrid Bayesian optimisation/6D_Demo/6D_TORUS_POINT_CLOUD.npy")
+verts = np.load("6D_TORUS_POINT_CLOUD.npy")
 
 j = scipy.spatial.Delaunay(verts)
 T = j.simplices
@@ -29,11 +29,11 @@ boundary = [f for f, count in Counter(face_tuples).items() if count == 1]
 boundary_faces = np.array([list(f) for f in boundary])
 
 
-np.save("Sphere example for Hybrid Bayesian optimisation/6D_Demo/6D_TORUS_DELAUNAY_SIMPLICES.npy", arr = T)
-np.save("Sphere example for Hybrid Bayesian optimisation/6D_Demo/6D_TORUS_DELAUNAY_POINTS.npy", arr = V)
+np.save("6D_TORUS_DELAUNAY_SIMPLICES.npy", arr = T)
+np.save("6D_TORUS_DELAUNAY_POINTS.npy", arr = V)
 
 
-with open("Sphere example for Hybrid Bayesian optimisation/6D_Demo/6D_TORUS_OBJ_FILE.obj", "w") as f:
+with open("6D_TORUS_OBJ_FILE.obj", "w") as f:
         # Write vertices first
     for vertex in V:
         f.write(f"v {vertex[0]} {vertex[1]} {vertex[2]} {vertex[3]} {vertex[4]} {vertex[5]}\n")

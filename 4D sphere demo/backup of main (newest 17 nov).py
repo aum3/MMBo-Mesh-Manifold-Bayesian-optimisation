@@ -370,52 +370,54 @@ fig_show(influence_fig)
 # ### Creating general geodesic-kernel plot
 # 
 # #### So look at the initial point cloud and find the kernels inbetween them based on this poisson mesh discretisation (using nearest distance) and then the actual continuous kernel based on the geometric kernels package
+# 
+# NOTE: This section is commented out as it requires "100_points_before_poisson.ply" which is not available in the 4D demo
 
 # %%
-poisson_mesh_points = mesh.vertices #N x 3 matrix. 
-original_mesh_points = np.empty((0, 3), dtype = np.float32) # N x 3 matrix 
+# poisson_mesh_points = mesh.vertices #N x 3 matrix. 
+# original_mesh_points = np.empty((0, 3), dtype = np.float32) # N x 3 matrix 
 
 # %%
-###### Mesh kernel matri
+# ###### Mesh kernel matri
 
-with open("100_points_before_poisson.ply", "r") as file:
-    vectors_start = False
-    for line in file:
-        line_arr = line.split(" ")
-        if line_arr[0] == 'end_header\n':
-            #now we've gone to the scalars
-            vectors_start = True
-        elif vectors_start == True:
-            line_arr = list(map(float, line_arr))[0:3]
-            new_vec = np.array(line_arr).reshape(1, -1).flatten().reshape(1, -1)
-            
-            original_mesh_points = np.vstack((original_mesh_points, new_vec))
+# with open("100_points_before_poisson.ply", "r") as file:
+#     vectors_start = False
+#     for line in file:
+#         line_arr = line.split(" ")
+#         if line_arr[0] == 'end_header\n':
+#             #now we've gone to the scalars
+#             vectors_start = True
+#         elif vectors_start == True:
+#             line_arr = list(map(float, line_arr))[0:3]
+#             new_vec = np.array(line_arr).reshape(1, -1).flatten().reshape(1, -1)
+#             
+#             original_mesh_points = np.vstack((original_mesh_points, new_vec))
 
 
 # %%
-num_verts = mesh.num_vertices
+# num_verts = mesh.num_vertices
 
-def find_nearest_poisson(original_point):
-    min_dist = 10000
-    best_one = False
-    for node_ind in range(mesh.num_vertices):
-        poisson_point = mesh.vertices[node_ind]
-        poisson_point = poisson_point / np.linalg.norm(poisson_point, keepdims = True )
-        if np.linalg.norm(poisson_point - original_point)<min_dist: #GONNA NEED SOME DEBUGGING
-            min_dist = np.linalg.norm(poisson_point - original_point)
-            best_one = node_ind
-    return best_one
+# def find_nearest_poisson(original_point):
+#     min_dist = 10000
+#     best_one = False
+#     for node_ind in range(mesh.num_vertices):
+#         poisson_point = mesh.vertices[node_ind]
+#         poisson_point = poisson_point / np.linalg.norm(poisson_point, keepdims = True )
+#         if np.linalg.norm(poisson_point - original_point)<min_dist: #GONNA NEED SOME DEBUGGING
+#             min_dist = np.linalg.norm(poisson_point - original_point)
+#             best_one = node_ind
+#     return best_one
 
-#create mesh kernel matrix
+# #create mesh kernel matrix
 
-INDS_VECTOR = np.zeros((original_mesh_points.shape[0], 1))
+# INDS_VECTOR = np.zeros((original_mesh_points.shape[0], 1))
 
-for i in range(original_mesh_points.shape[0]):
-    
-    point_1 = original_mesh_points[i, :]
-    
-    INDS_VECTOR[i] = find_nearest_poisson(point_1)
-mesh_kernel_matrix = kernel.K(params, INDS_VECTOR , INDS_VECTOR)
+# for i in range(original_mesh_points.shape[0]):
+#     
+#     point_1 = original_mesh_points[i, :]
+#     
+#     INDS_VECTOR[i] = find_nearest_poisson(point_1)
+# mesh_kernel_matrix = kernel.K(params, INDS_VECTOR , INDS_VECTOR)
 
 
 
@@ -429,35 +431,35 @@ mesh_kernel_matrix = kernel.K(params, INDS_VECTOR , INDS_VECTOR)
 
 
 
-from geometric_kernels.spaces import Hypersphere
-proper_cts_sphere = Hypersphere(dim = 2)
-cts_kernel = MaternGeometricKernel(proper_cts_sphere)
+# from geometric_kernels.spaces import Hypersphere
+# proper_cts_sphere = Hypersphere(dim = 2)
+# cts_kernel = MaternGeometricKernel(proper_cts_sphere)
 
-Dist_matrix = np.zeros((original_mesh_points.shape[0], original_mesh_points.shape[0]))
-original_mesh_points = original_mesh_points / np.linalg.norm(original_mesh_points, axis=1, keepdims=True)
-CTS_kernel_matrix = cts_kernel.K(params, original_mesh_points, original_mesh_points)
+# Dist_matrix = np.zeros((original_mesh_points.shape[0], original_mesh_points.shape[0]))
+# original_mesh_points = original_mesh_points / np.linalg.norm(original_mesh_points, axis=1, keepdims=True)
+# CTS_kernel_matrix = cts_kernel.K(params, original_mesh_points, original_mesh_points)
 
-verts = mesh.vertices #N x 3
-
-
-for i in range(original_mesh_points.shape[0]):
-    for j in range(i, original_mesh_points.shape[0]):
-        point_1 = original_mesh_points[i]
-        point_2 = original_mesh_points[j]
-        dot_product = np.dot(point_1, point_2)
-        clipped_dot_product = np.clip(dot_product, -1.0, 1.0)
-        geodesic_dist = np.arccos(clipped_dot_product)
-        Dist_matrix[j][i] = geodesic_dist
-        Dist_matrix[i][j] = geodesic_dist
+# verts = mesh.vertices #N x 3
 
 
-
-
-        
+# for i in range(original_mesh_points.shape[0]):
+#     for j in range(i, original_mesh_points.shape[0]):
+#         point_1 = original_mesh_points[i]
+#         point_2 = original_mesh_points[j]
+#         dot_product = np.dot(point_1, point_2)
+#         clipped_dot_product = np.clip(dot_product, -1.0, 1.0)
+#         geodesic_dist = np.arccos(clipped_dot_product)
+#         Dist_matrix[j][i] = geodesic_dist
+#         Dist_matrix[i][j] = geodesic_dist
 
 
 
-        
+
+#         
+
+
+
+#         
 
 
 # %% [markdown]
@@ -465,98 +467,98 @@ for i in range(original_mesh_points.shape[0]):
 # 
 
 # %%
-c = np.zeros((original_mesh_points.shape[0] ** 2, 1)) #Real distances matrix (Geodesics)
-b = np.zeros_like(c) #proper cts kernel 
-a = np.zeros_like(c) #mesh kernel approximation
+# c = np.zeros((original_mesh_points.shape[0] ** 2, 1)) #Real distances matrix (Geodesics)
+# b = np.zeros_like(c) #proper cts kernel 
+# a = np.zeros_like(c) #mesh kernel approximation
 
-for i in range(0, original_mesh_points.shape[0]):
-    for j in range(0, original_mesh_points.shape[0]):
-        c[(original_mesh_points.shape[0])*i + j] = Dist_matrix[i][j]
-        b[(original_mesh_points.shape[0])*i + j] = CTS_kernel_matrix[i][j]
-        a[(original_mesh_points.shape[0])*i + j] = mesh_kernel_matrix[i][j]
+# for i in range(0, original_mesh_points.shape[0]):
+#     for j in range(0, original_mesh_points.shape[0]):
+#         c[(original_mesh_points.shape[0])*i + j] = Dist_matrix[i][j]
+#         b[(original_mesh_points.shape[0])*i + j] = CTS_kernel_matrix[i][j]
+#         a[(original_mesh_points.shape[0])*i + j] = mesh_kernel_matrix[i][j]
 
 
 
 
 # %% [markdown]
-# ## Trying to plot this shit
+# ## Trying to plot this shit (COMMENTED OUT - depends on missing data file)
 
 # %%
-'''
-import numpy as np
-import matplotlib.pyplot as plt
+# '''
+# import numpy as np
+# import matplotlib.pyplot as plt
 
 
 
-# Ensure data is 1D for plotting (flattening the column vectors)
-c = c.flatten()
-a = a.flatten()
-b = b.flatten()
+# # Ensure data is 1D for plotting (flattening the column vectors)
+# c = c.flatten()
+# a = a.flatten()
+# b = b.flatten()
 
-# 1. Create figure and primary Axes (ax1)
-fig, ax1 = plt.subplots(figsize=(10, 6))
+# # 1. Create figure and primary Axes (ax1)
+# fig, ax1 = plt.subplots(figsize=(10, 6))
 
-# Set the primary plot (a vs c) on the left Y-axis
-color_a = 'tab:red'
-ax1.set_xlabel('Vector c (X-axis)')
-ax1.set_ylabel('Vector a (Y1)', color=color_a)
-ax1.scatter(c, a, c=color_a, label='Vector a', s = 3)
-ax1.tick_params(axis='y', labelcolor=color_a)
+# # Set the primary plot (a vs c) on the left Y-axis
+# color_a = 'tab:red'
+# ax1.set_xlabel('Vector c (X-axis)')
+# ax1.set_ylabel('Vector a (Y1)', color=color_a)
+# ax1.scatter(c, a, c=color_a, label='Vector a', s = 3)
+# ax1.tick_params(axis='y', labelcolor=color_a)
 
-# 2. Create secondary Axes (ax2) sharing the X-axis
-ax2 = ax1.twinx()
+# # 2. Create secondary Axes (ax2) sharing the X-axis
+# ax2 = ax1.twinx()
 
-# Set the secondary plot (b vs c) on the right Y-axis
-color_b = 'tab:blue'
-ax2.set_ylabel('Vector b (Y2)', color=color_b)
-ax2.scatter(c, b, c=color_b, label='Vector b', s = 3)
-ax2.tick_params(axis='y', labelcolor=color_b)
-
-
-#TRYING TO FIX THE SCALING ISSUES:
+# # Set the secondary plot (b vs c) on the right Y-axis
+# color_b = 'tab:blue'
+# ax2.set_ylabel('Vector b (Y2)', color=color_b)
+# ax2.scatter(c, b, c=color_b, label='Vector b', s = 3)
+# ax2.tick_params(axis='y', labelcolor=color_b)
 
 
+# #TRYING TO FIX THE SCALING ISSUES:
 
-# 3. Add title and legend
-plt.title('Scatter Plots with Dual Y-Axes')
-# Combine legends from both axes
-lines1, labels1 = ax1.get_legend_handles_labels()
-lines2, labels2 = ax2.get_legend_handles_labels()
-ax2.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
 
-# 4. Show plot
-plt.show() 
-#BOTH DATASETS HAVE BEEN NORMALSIED SO THE ACTUAL NUMBERS ARE MEANINGLESS 
-'''
 
-# %%
-import numpy as np
-import matplotlib.pyplot as plt
+# # 3. Add title and legend
+# plt.title('Scatter Plots with Dual Y-Axes')
+# # Combine legends from both axes
+# lines1, labels1 = ax1.get_legend_handles_labels()
+# lines2, labels2 = ax2.get_legend_handles_labels()
+# ax2.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
 
-# Ensure data is 1D for plotting (flattening the column vectors)
-c = c.flatten()
-a = a.flatten()
-b = b.flatten()
-
-# 1. Create figure and Axes
-fig, ax1 = plt.subplots(figsize=(10, 6))
-
-# Plot both datasets on the same axis
-ax1.set_xlabel('Vector c (X-axis)')
-ax1.set_ylabel('Values', color='black')  # Single y-axis label for both datasets
-ax1.scatter(c, a, c='tab:red', label='Vector a', s=3)
-ax1.scatter(c, b, c='tab:blue', label='Vector b', s=3)
-
-# Add legend
-ax1.legend(loc='upper left')
-
-# Add title
-plt.title('SCATTER')
-
-# Show plot
-plt.show()
+# # 4. Show plot
+# plt.show() 
+# #BOTH DATASETS HAVE BEEN NORMALSIED SO THE ACTUAL NUMBERS ARE MEANINGLESS 
+# '''
 
 # %%
-np.min(c)
+# import numpy as np
+# import matplotlib.pyplot as plt
+
+# # Ensure data is 1D for plotting (flattening the column vectors)
+# c = c.flatten()
+# a = a.flatten()
+# b = b.flatten()
+
+# # 1. Create figure and Axes
+# fig, ax1 = plt.subplots(figsize=(10, 6))
+
+# # Plot both datasets on the same axis
+# ax1.set_xlabel('Vector c (X-axis)')
+# ax1.set_ylabel('Values', color='black')  # Single y-axis label for both datasets
+# ax1.scatter(c, a, c='tab:red', label='Vector a', s=3)
+# ax1.scatter(c, b, c='tab:blue', label='Vector b', s=3)
+
+# # Add legend
+# ax1.legend(loc='upper left')
+
+# # Add title
+# plt.title('SCATTER')
+
+# # Show plot
+# plt.show()
+
+# %%
+# np.min(c)
 
 
