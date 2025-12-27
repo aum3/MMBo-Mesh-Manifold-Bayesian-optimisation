@@ -117,7 +117,7 @@ AllChem.EmbedMolecule(pentane)
 # %%
 MeshFolder_dir = Path.cwd() #/ "My meshes"
 print( "DIR:", MeshFolder_dir)
-Filename = "Delaunay 100point sphere.obj"
+Filename = "100 POINTS ONE.obj"
 mesh = Mesh.load_mesh(str(MeshFolder_dir / Filename))
 print(mesh.num_vertices)
 
@@ -450,7 +450,7 @@ original_mesh_points = np.empty((0, 3), dtype = np.float32) # N x 3 matrix
 # %%
 ###### Mesh kernel matri
 
-with open("100_points_before_poisson.ply", "r") as file:
+with open("Point cloud before Poisson surface reconstruction.ply", "r") as file:
     vectors_start = False
     for line in file:
         line_arr = line.split(" ")
